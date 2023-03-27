@@ -1,7 +1,7 @@
 {
   "name": "apod-wallpaper",
   "version": "1.0.0",
-  "description": "",
+  "description": "Fetches the APOD image and sets it as the wallpaper",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -10,6 +10,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "bin": "index.js",
   "dependencies": {
     "axios": "^1.3.4",
     "dotenv": "^16.0.3",
