@@ -2,6 +2,7 @@ import axios from 'axios';
 import fs from 'fs/promises';
 import { setWallpaper } from 'wallpaper';
 import dotenv from 'dotenv';
+import cron from 'node-cron';
 
 dotenv.config();
 const APOD_API_KEY = process.env.APOD_API_KEY;
@@ -42,10 +43,18 @@ async function downloadAndSetWallpaper(imageUrl) {
     }
   }  
 
-(async () => {
+async function fetchAndSetWallpaper() {
   const imageUrl = await fetchApodImage();
 
   if (imageUrl) {
     await downloadAndSetWallpaper(imageUrl);
   }
-})();
+}
+
+cron.schedule('0 12 * * *', async () => {
+    console.log('Fetching and setting APOD wallpaper...');
+    await fetchAndSetWallpaper();
+    console.log('Done.');
+});
+
+fetchAndSetWallpaper();
