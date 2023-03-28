@@ -16,14 +16,14 @@ async function fetchApodImage() {
       },
     });
 
-    const { url, media_type } = response.data;
+    const { hdurl, media_type } = response.data;
 
     if (media_type !== 'image') {
       console.log('The APOD for today is not an image. Try again tomorrow.');
       return;
     }
 
-    return url;
+    return hdurl;
   } catch (error) {
     console.error('Error fetching APOD image:', error);
   }
@@ -69,7 +69,7 @@ async function getApiKey() {
       message: 'Enter your APOD API key:',
       validate: function (value) {
         if (value.trim().length === 0) {
-          return 'Please enter your API key.';
+          return 'Please enter your API key. If you not have API key, you can get it from https://api.nasa.gov/';
         }
         return true;
       },
