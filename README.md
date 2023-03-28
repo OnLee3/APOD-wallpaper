@@ -11,30 +11,30 @@ This is a Node.js script that sets your desktop wallpaper to the Astronomy Pictu
 
 1.  Clone the repository:
     
-    bashCopy code
-    
-    `git clone https://github.com/OnLee3/APOD-wallpaper.git`
+    ```
+    git clone https://github.com/OnLee3/APOD-wallpaper.git
+    ```
     
 2.  Change to the `APOD-wallpaper` directory:
     
-    bashCopy code
-    
-    `cd APOD-wallpaper`
+    ```
+    cd APOD-wallpaper
+    ```
     
 3.  Install the required dependencies:
     
-    Copy code
-    
-    `npm install`
+    ```
+    npm install
+    ```
     
 
 ## Usage
 
 1.  Run the script:
     
-    Copy code
-    
-    `node index.js`
+    ```
+    node index.js
+    ```
     
 2.  If it's your first time running the script, it will prompt you to enter your NASA API key. Enter the key, and it will be saved to a `.env` file for future use.
     
