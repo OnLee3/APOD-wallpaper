@@ -43,7 +43,7 @@ async function downloadAndSetWallpaper(imageUrl) {
     }
   }  
 
-async function fetchAndSetWallpaper() {
+export async function fetchAndSetWallpaper() {
   const imageUrl = await fetchApodImage();
 
   if (imageUrl) {

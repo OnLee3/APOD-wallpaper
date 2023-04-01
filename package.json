@@ -2,10 +2,11 @@
   "name": "apod-wallpaper",
   "version": "1.0.0",
   "description": "Fetches the APOD image and sets it as the wallpaper",
-  "main": "index.js",
+  "main": "src/main.cjs",
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "electron src/main.cjs",
+    "build": "electron-builder"
   },
   "keywords": [],
   "author": "",
@@ -18,5 +19,9 @@
     "inquirer": "^9.1.5",
     "node-cron": "^3.0.2",
     "wallpaper": "^6.1.1"
+  },
+  "devDependencies": {
+    "electron": "^23.2.1",
+    "electron-builder": "^24.1.2"
   }
 }

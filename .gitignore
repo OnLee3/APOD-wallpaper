@@ -1,3 +1,4 @@
 .env
 /node_modules
 apod.jpg
+/dist
