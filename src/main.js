@@ -1,9 +1,6 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { fetchAndSetWallpaper } from './index.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const { app, BrowserWindow, ipcMain } = require('electron');
+const path = require('path');
+const { fetchAndSetWallpaper } = require('./index.js');
 
 async function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -17,7 +14,7 @@ async function createWindow() {
   });
 
   mainWindow.loadFile(path.join(__dirname, '../public/index.html'));
-  mainWindow.webContents.openDevTools();  
+  mainWindow.webContents.openDevTools();
 }
 
 app.whenReady().then(async () => {

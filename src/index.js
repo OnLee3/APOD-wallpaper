@@ -1,9 +1,17 @@
-import axios from 'axios';
-import fs from 'fs/promises';
-import { setWallpaper } from 'wallpaper';
-import dotenv from 'dotenv';
-import cron from 'node-cron';
-import inquirer from 'inquirer';
+const axios = require('axios');
+const fs = require('fs/promises');
+const dotenv = require('dotenv');
+const cron = require('node-cron');
+
+let getWallpaper, setWallpaper;
+let inquirer;
+
+(async () => {
+  const wallpaperModule = await import('wallpaper');
+  getWallpaper = wallpaperModule.getWallpaper;
+  setWallpaper = wallpaperModule.setWallpaper;
+  inquirer = (await import('inquirer')).default;
+})();
 
 dotenv.config();
 const APOD_API_URL = 'https://api.nasa.gov/planetary/apod';
@@ -43,7 +51,7 @@ async function downloadAndSetWallpaper(imageUrl) {
     }
   }  
 
-export async function fetchAndSetWallpaper() {
+async function fetchAndSetWallpaper() {
   const imageUrl = await fetchApodImage();
 
   if (imageUrl) {
@@ -105,3 +113,5 @@ async function main() {
 }
 
 main();
+
+module.exports = { fetchAndSetWallpaper };
