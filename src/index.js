@@ -1,7 +1,9 @@
 const axios = require('axios');
-const fs = require('fs/promises');
+const fileSystem = require('fs');
 const dotenv = require('dotenv');
 const cron = require('node-cron');
+const path = require('path');
+const { app } = require('electron');
 
 let getWallpaper, setWallpaper;
 let inquirer;
@@ -37,19 +39,29 @@ async function fetchApodImage() {
   }
 }
 
-async function downloadAndSetWallpaper(imageUrl) {
-    try {
-      const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-      const imageBuffer = Buffer.from(response.data, 'binary');
-      const imagePath = 'apod.jpg';
-  
-      await fs.writeFile(imagePath, imageBuffer);
+async function downloadAndSetWallpaper(url) {
+  try {
+    const response = await axios({
+      url,
+      method: 'GET',
+      responseType: 'stream',
+    });
+
+    const imagePath = path.join(app.getPath('userData'), 'wallpaper.jpg');
+    const writer = response.data.pipe(fileSystem.createWriteStream(imagePath));
+
+    writer.on('finish', async () => {
       await setWallpaper(imagePath);
       console.log('Wallpaper set successfully');
-    } catch (error) {
+    });
+
+    writer.on('error', (error) => {
       console.error('Error downloading and setting wallpaper:', error);
-    }
-  }  
+    });
+  } catch (error) {
+    console.error('Error downloading and setting wallpaper:', error);
+  }
+}
 
 async function fetchAndSetWallpaper() {
   const imageUrl = await fetchApodImage();
