@@ -4,6 +4,7 @@ const { app } = require("electron");
 
 const CONFIG_FILE_NAME = "config.json";
 const CONFIG_PATH = path.join(app.getPath("userData"), CONFIG_FILE_NAME);
+console.log(CONFIG_PATH);
 
 function readConfig() {
   try {
