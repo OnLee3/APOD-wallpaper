@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu } = require("electron");
 const path = require("path");
 const { readConfig, writeConfig } = require("./config");
-const { fetchAndSetWallpaper } = require("./index");
+const { downloadAndSetWallpaper } = require("./index");
 
 let tray = null;
 let mainWindow = null;
@@ -68,6 +68,14 @@ app.on("window-all-closed", () => {
   }
 });
 
+ipcMain.on("reset-api-key", (event) => {
+  console.log("Resetting API key...");
+  const config = readConfig();
+  config.apiKey = null;
+  writeConfig(config);
+  event.sender.send("api-key", null);
+});
+
 ipcMain.on("submit-api-key", (event, apiKey) => {
   console.log("Received API key:", apiKey);
   // Save the API key, run the main function, etc.
@@ -84,6 +92,11 @@ ipcMain.on("get-api-key", (event) => {
 
 ipcMain.on("set-wallpaper", async (event, apiKey) => {
   console.log("Setting APOD wallpaper...");
-  await fetchAndSetWallpaper(apiKey);
+  event.sender.send("set-wallpaper", apiKey);
+});
+
+ipcMain.on("download-and-set-wallpaper", async (event, imageUrl) => {
+  console.log("Downloading and setting wallpaper...");
+  await downloadAndSetWallpaper(imageUrl);
   console.log("Done.");
 });

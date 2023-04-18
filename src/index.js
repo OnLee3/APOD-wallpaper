@@ -12,29 +12,6 @@ let getWallpaper, setWallpaper;
   setWallpaper = wallpaperModule.setWallpaper;
 })();
 
-const APOD_API_URL = "https://api.nasa.gov/planetary/apod";
-
-async function fetchApodImage(apiKey) {
-  try {
-    const response = await axios.get(APOD_API_URL, {
-      params: {
-        api_key: apiKey,
-      },
-    });
-
-    const { hdurl, media_type } = response.data;
-
-    if (media_type !== "image") {
-      console.log("The APOD for today is not an image. Try again tomorrow.");
-      return;
-    }
-
-    return hdurl;
-  } catch (error) {
-    console.error("Error fetching APOD image:", error);
-  }
-}
-
 async function downloadAndSetWallpaper(url) {
   try {
     const response = await axios({
@@ -59,12 +36,4 @@ async function downloadAndSetWallpaper(url) {
   }
 }
 
-async function fetchAndSetWallpaper(apiKey) {
-  const imageUrl = await fetchApodImage(apiKey);
-
-  if (imageUrl) {
-    await downloadAndSetWallpaper(imageUrl);
-  }
-}
-
-module.exports = { fetchAndSetWallpaper };
+module.exports = { downloadAndSetWallpaper };

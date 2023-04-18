@@ -1,5 +1,5 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld('electron', {
-  setWallpaper: () => ipcRenderer.send('set-wallpaper'),
+contextBridge.exposeInMainWorld("electron", {
+  setWallpaper: () => ipcRenderer.send("set-wallpaper"),
 });
