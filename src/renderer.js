@@ -11,14 +11,14 @@ async function fetchApodImage(apiKey) {
       },
     });
 
-    const { hdurl, media_type } = response.data;
+    const { hdurl, media_type, url } = response.data;
 
     if (media_type !== "image") {
       console.log("The APOD for today is not an image. Try again tomorrow.");
       return;
     }
 
-    return hdurl;
+    return { hdurl, url };
   } catch (error) {
     if (error.code === "ERR_BAD_REQUEST") {
       console.error(
@@ -33,10 +33,10 @@ async function fetchApodImage(apiKey) {
 
 ipcRenderer.on("set-wallpaper", async (event, apiKey) => {
   console.log("Setting APOD wallpaper...");
-  const imageUrl = await fetchApodImage(apiKey);
+  const { hdurl, url } = await fetchApodImage(apiKey);
 
-  if (imageUrl) {
-    ipcRenderer.send("download-and-set-wallpaper", imageUrl);
+  if (hdurl || url) {
+    ipcRenderer.send("download-and-set-wallpaper", { hdurl, url });
   }
 });
 

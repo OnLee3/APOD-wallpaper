@@ -95,8 +95,8 @@ ipcMain.on("set-wallpaper", async (event, apiKey) => {
   event.sender.send("set-wallpaper", apiKey);
 });
 
-ipcMain.on("download-and-set-wallpaper", async (event, imageUrl) => {
+ipcMain.on("download-and-set-wallpaper", async (event, { hdurl, url }) => {
   console.log("Downloading and setting wallpaper...");
-  await downloadAndSetWallpaper(imageUrl);
+  await downloadAndSetWallpaper({ hdurl, url });
   console.log("Done.");
 });

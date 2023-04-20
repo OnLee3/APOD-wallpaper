@@ -1,8 +1,7 @@
 const axios = require("axios");
-const fileSystem = require("fs");
-const cron = require("node-cron");
-const path = require("path");
+const fs = require("fs");
 const { app } = require("electron");
+const path = require("path");
 
 let getWallpaper, setWallpaper;
 
@@ -12,25 +11,36 @@ let getWallpaper, setWallpaper;
   setWallpaper = wallpaperModule.setWallpaper;
 })();
 
-async function downloadAndSetWallpaper(url) {
+async function downloadImage(imageUrl) {
+  const response = await axios({
+    url: imageUrl,
+    method: "GET",
+    responseType: "stream",
+  });
+
+  return response.data;
+}
+
+function saveImageToDisk(imageStream) {
+  const imagePath = path.join(app.getPath("userData"), "wallpaper.jpg");
+  const writer = imageStream.pipe(fs.createWriteStream(imagePath));
+
+  return new Promise((resolve, reject) => {
+    writer.on("finish", resolve);
+    writer.on("error", reject);
+  });
+}
+
+async function downloadAndSetWallpaper({ hdurl, url }) {
   try {
-    const response = await axios({
-      url,
-      method: "GET",
-      responseType: "stream",
+    let imageStream = await downloadImage(hdurl).catch(async () => {
+      console.error("Error downloading hdurl wallpaper, trying url.");
+      return await downloadImage(url);
     });
 
-    const imagePath = path.join(app.getPath("userData"), "wallpaper.jpg");
-    const writer = response.data.pipe(fileSystem.createWriteStream(imagePath));
-
-    writer.on("finish", async () => {
-      await setWallpaper(imagePath);
-      console.log("Wallpaper set successfully");
-    });
-
-    writer.on("error", (error) => {
-      console.error("Error downloading and setting wallpaper:", error);
-    });
+    await saveImageToDisk(imageStream);
+    await setWallpaper(path.join(app.getPath("userData"), "wallpaper.jpg"));
+    console.log("Wallpaper set successfully");
   } catch (error) {
     console.error("Error downloading and setting wallpaper:", error);
   }
