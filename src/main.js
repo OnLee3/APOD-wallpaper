@@ -19,7 +19,6 @@ function createWindow() {
   mainWindow.webContents.openDevTools();
   mainWindow.loadFile(path.join(__dirname, "index.html"));
 
-  // Set mainWindow to null when the window is closed
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
@@ -27,6 +26,7 @@ function createWindow() {
 
 function createTrayIcon() {
   tray = new Tray(path.join(__dirname, "../public/tray-icon.png"));
+
   const contextMenu = Menu.buildFromTemplate([
     {
       label: "Show App",
@@ -51,9 +51,50 @@ function createTrayIcon() {
   tray.setContextMenu(contextMenu);
 }
 
+function handleIpcEvents() {
+  ipcMain.on("reset-api-key", resetApiKey);
+  ipcMain.on("submit-api-key", submitApiKey);
+  ipcMain.on("get-api-key", getApiKey);
+  ipcMain.on("set-wallpaper", setWallpaper);
+  ipcMain.on("download-and-set-wallpaper", downloadAndSetWallpaperHandler);
+}
+
+function resetApiKey(event) {
+  console.log("Resetting API key...");
+  const config = readConfig();
+  config.apiKey = null;
+  writeConfig(config);
+  event.sender.send("api-key", null);
+}
+
+function submitApiKey(event, apiKey) {
+  console.log("Received API key:", apiKey);
+  const config = readConfig();
+  config.apiKey = apiKey;
+  writeConfig(config);
+}
+
+function getApiKey(event) {
+  const config = readConfig();
+  const apiKey = config.apiKey;
+  event.sender.send("api-key", apiKey);
+}
+
+function setWallpaper(event, apiKey) {
+  console.log("Setting APOD wallpaper...");
+  event.sender.send("set-wallpaper", apiKey);
+}
+
+async function downloadAndSetWallpaperHandler(event, { hdurl, url }) {
+  console.log("Downloading and setting wallpaper...");
+  await downloadAndSetWallpaper({ hdurl, url });
+  console.log("Done.");
+}
+
 app.whenReady().then(() => {
   createWindow();
   createTrayIcon();
+  handleIpcEvents();
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -66,37 +107,4 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
-});
-
-ipcMain.on("reset-api-key", (event) => {
-  console.log("Resetting API key...");
-  const config = readConfig();
-  config.apiKey = null;
-  writeConfig(config);
-  event.sender.send("api-key", null);
-});
-
-ipcMain.on("submit-api-key", (event, apiKey) => {
-  console.log("Received API key:", apiKey);
-  // Save the API key, run the main function, etc.
-  const config = readConfig();
-  config.apiKey = apiKey;
-  writeConfig(config);
-});
-
-ipcMain.on("get-api-key", (event) => {
-  const config = readConfig();
-  const apiKey = config.apiKey;
-  event.sender.send("api-key", apiKey);
-});
-
-ipcMain.on("set-wallpaper", async (event, apiKey) => {
-  console.log("Setting APOD wallpaper...");
-  event.sender.send("set-wallpaper", apiKey);
-});
-
-ipcMain.on("download-and-set-wallpaper", async (event, { hdurl, url }) => {
-  console.log("Downloading and setting wallpaper...");
-  await downloadAndSetWallpaper({ hdurl, url });
-  console.log("Done.");
 });
