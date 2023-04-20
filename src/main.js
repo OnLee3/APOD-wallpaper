@@ -25,7 +25,7 @@ function createWindow() {
 }
 
 function createTrayIcon() {
-  tray = new Tray(path.join(__dirname, "../public/tray-icon.png"));
+  tray = new Tray(path.join(__dirname, "../public/donut_16x16.png"));
 
   const contextMenu = Menu.buildFromTemplate([
     {
