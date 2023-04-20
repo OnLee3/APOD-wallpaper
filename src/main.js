@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu } = require("electron");
 const path = require("path");
+const cron = require("node-cron");
 const { readConfig, writeConfig } = require("./config");
 const { downloadAndSetWallpaper } = require("./index");
 
@@ -91,10 +92,36 @@ async function downloadAndSetWallpaperHandler(event, { hdurl, url }) {
   console.log("Done.");
 }
 
+function scheduleWallpaperUpdate() {
+  cron.schedule(
+    "1 0 * * *",
+    async () => {
+      console.log("Checking for new APOD image...");
+      const config = readConfig();
+      const apiKey = config.apiKey;
+
+      if (!apiKey) {
+        console.log("No API key found. Skipping wallpaper update.");
+        return;
+      }
+
+      const { ipcRenderer } = require("electron");
+      ipcRenderer.send("get-api-key");
+    },
+    {
+      scheduled: true,
+      timezone: "America/New_York",
+    }
+  );
+
+  console.log("Scheduled wallpaper update task.");
+}
+
 app.whenReady().then(() => {
   createWindow();
   createTrayIcon();
   handleIpcEvents();
+  scheduleWallpaperUpdate();
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
