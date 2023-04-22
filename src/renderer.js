@@ -50,7 +50,7 @@ function handleApiKeyFormSubmit(event) {
 }
 
 function showApiKeyForm(show) {
-  document.getElementById("api-key-form").style.display = show
+  document.getElementById("api-key-form-container").style.display = show
     ? "block"
     : "none";
 }

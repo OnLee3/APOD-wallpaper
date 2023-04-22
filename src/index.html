@@ -7,11 +7,13 @@
   <body>
     <h1>APOD Wallpaper</h1>
     <button id="set-wallpaper">Set Wallpaper</button>
-    <h1>Enter your APOD API key</h1>
-    <form id="api-key-form">
-      <input type="text" id="api-key-input" />
-      <button type="submit">Submit</button>
-    </form>
+    <div id="api-key-form-container" style="display: none">
+      <h1>Enter your APOD API key</h1>
+      <form id="api-key-form">
+        <input type="text" id="api-key-input" />
+        <button type="submit">Submit</button>
+      </form>
+    </div>
     <script src="../src/renderer.js"></script>
   </body>
 </html>
