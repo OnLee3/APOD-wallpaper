@@ -75,6 +75,15 @@ ipcRenderer.on("api-key", (event, apiKey) => {
   }
 });
 
+ipcRenderer.on("submit-api-key", (event, apiKey) => {
+  console.log("Received API key:", apiKey);
+  if (apiKey) {
+    showApiKeyForm(false);
+  } else {
+    showApiKeyForm(true);
+  }
+});
+
 document
   .getElementById("set-wallpaper")
   .addEventListener("click", handleSetWallpaperClick);

@@ -73,6 +73,7 @@ function submitApiKey(event, apiKey) {
   const config = readConfig();
   config.apiKey = apiKey;
   writeConfig(config);
+  event.sender.send("submit-api-key", apiKey);
 }
 
 function getApiKey(event) {
