@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>APOD Wallpaper</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="set-wallpaper-container">
+      <h1>APOD Wallpaper</h1>
+      <button id="set-wallpaper">Set Wallpaper</button>
+    </div>
+    <div id="api-key-form-container" style="display: none">
+      <h1>Enter your APOD API key</h1>
+      <form id="api-key-form">
+        <input type="text" id="api-key-input" />
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+    <div id="loading-spinner" style="display: none">
+      <div class="spinner"></div>
+    </div>
+    <div id="status-message">
+      <div id="success-message" style="display: none">
+        Wallpaper set successfully!
+      </div>
+      <div id="error-message" style="display: none">
+        <span id="error-text"></span>
+      </div>
+    </div>
+    <script src="../src/renderer.js"></script>
+  </body>
+</html>
