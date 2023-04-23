@@ -3,6 +3,7 @@ const path = require("path");
 const cron = require("node-cron");
 const { readConfig, writeConfig } = require("./config");
 const { downloadAndSetWallpaper } = require("./index");
+const { fetchApodImageData } = require("./apod");
 
 let tray = null;
 let mainWindow = null;
@@ -19,7 +20,7 @@ function createWindow() {
     },
   });
 
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
   mainWindow.loadFile(path.join(__dirname, "index.html"));
   mainWindow.on("closed", () => (mainWindow = null));
 }
@@ -130,8 +131,8 @@ function scheduleWallpaperUpdate() {
         console.log("No API key found. Skipping wallpaper update.");
         return;
       }
-
-      getApiKey();
+      const { hdurl, url } = await fetchApodImageData(apiKey);
+      await downloadAndSetWallpaper({ hdurl, url });
     },
     {
       scheduled: true,

@@ -1,28 +1,5 @@
 const { ipcRenderer } = require("electron");
-const axios = require("axios");
-
-const APOD_API_URL = "https://api.nasa.gov/planetary/apod";
-
-async function fetchApodImageData(apiKey) {
-  try {
-    const response = await axios.get(APOD_API_URL, {
-      params: {
-        api_key: apiKey,
-      },
-    });
-
-    const { hdurl, media_type, url } = response.data;
-
-    if (media_type !== "image") {
-      console.log("The APOD for today is not an image. Try again tomorrow.");
-      return;
-    }
-
-    return { hdurl, url };
-  } catch (error) {
-    handleErrorWhileFetchingApodImage(error);
-  }
-}
+const { fetchApodImageData } = require("./apod");
 
 function handleErrorWhileFetchingApodImage(error) {
   hideLoadingSpinner();
@@ -156,7 +133,10 @@ document
 
 ipcRenderer.on("set-wallpaper", async (event, apiKey) => {
   console.log("Setting APOD wallpaper...");
-  const { hdurl, url } = await fetchApodImageData(apiKey);
+  const { hdurl, url } = await fetchApodImageData(
+    apiKey,
+    handleErrorWhileFetchingApodImage
+  );
 
   if (hdurl || url) {
     ipcRenderer.send("download-and-set-wallpaper", { hdurl, url });
