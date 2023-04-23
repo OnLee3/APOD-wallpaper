@@ -37,6 +37,13 @@ function handleSetWallpaperClick() {
   ipcRenderer.send("get-api-key");
 }
 
+function setWallpaper() {
+  ipcRenderer.once("download-and-set-wallpaper-finished", () => {
+    const loadingSpinner = document.getElementById("loading-spinner");
+    loadingSpinner.style.display = "none";
+  });
+}
+
 function handleApiKeyFormSubmit(event) {
   event.preventDefault();
   const apiKey = document.getElementById("api-key-input").value.trim();
@@ -68,6 +75,9 @@ ipcRenderer.on("api-key", (event, apiKey) => {
   if (apiKey) {
     console.log("API key found:", apiKey);
     ipcRenderer.send("set-wallpaper", apiKey);
+    const loadingSpinner = document.getElementById("loading-spinner");
+    loadingSpinner.style.display = "flex";
+    setWallpaper();
     showApiKeyForm(false);
   } else {
     console.log("API key not found");

@@ -9,8 +9,8 @@ let mainWindow = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 400,
+    height: 300,
     minWidth: 400,
     minHeight: 300,
     webPreferences: {
@@ -93,6 +93,7 @@ async function downloadAndSetWallpaperHandler(event, { hdurl, url }) {
   console.log("Downloading and setting wallpaper...");
   await downloadAndSetWallpaper({ hdurl, url });
   console.log("Done.");
+  event.sender.send("download-and-set-wallpaper-finished");
 }
 
 function scheduleWallpaperUpdate() {
