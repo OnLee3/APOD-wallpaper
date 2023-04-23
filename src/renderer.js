@@ -26,10 +26,12 @@ async function fetchApodImageData(apiKey) {
 
 function handleApodImageError(error) {
   if (error.code === "ERR_BAD_REQUEST") {
-    console.error("Invalid API key. Please check your API key and try again.");
+    showErrorMessage(
+      "Invalid API key. Please check your API key and try again."
+    );
     ipcRenderer.send("reset-api-key");
   } else {
-    console.error("Error fetching APOD image:", error);
+    showErrorMessage("Error fetching APOD image: " + error.message);
   }
 }
 
@@ -40,8 +42,9 @@ function requestApiKey() {
 function displayWallpaperLoading() {
   const loadingSpinner = document.getElementById("loading-spinner");
   loadingSpinner.style.display = "flex";
-  ipcRenderer.once("download-and-set-wallpaper-finished", () => {
+  ipcRenderer.once("download-and-set-wallpaper-finished", (event) => {
     loadingSpinner.style.display = "none";
+    showSuccessIcon();
   });
 }
 
@@ -61,6 +64,22 @@ function toggleApiKeyFormVisibility(show) {
   document.getElementById("api-key-form-container").style.display = show
     ? "block"
     : "none";
+}
+
+function showSuccessIcon() {
+  const successIcon = document.getElementById("success-icon");
+  const errorMessage = document.getElementById("error-message");
+  successIcon.style.display = "block";
+  errorMessage.style.display = "none";
+}
+
+function showErrorMessage(errorText) {
+  const successIcon = document.getElementById("success-icon");
+  const errorMessage = document.getElementById("error-message");
+  const errorTextElement = document.getElementById("error-text");
+  successIcon.style.display = "none";
+  errorMessage.style.display = "block";
+  errorTextElement.innerText = errorText;
 }
 
 function createStarsBackground(numStars) {

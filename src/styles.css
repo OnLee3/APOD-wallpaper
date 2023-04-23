@@ -190,3 +190,17 @@ button[type="submit"] {
     transform: rotate(360deg);
   }
 }
+
+#success-message {
+  color: #4caf50;
+  font-weight: bold;
+  margin-top: 1rem;
+  z-index: 2;
+}
+
+#error-message {
+  color: #f44336;
+  font-weight: bold;
+  margin-top: 1rem;
+  z-index: 2;
+}
