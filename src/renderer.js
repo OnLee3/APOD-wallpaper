@@ -63,6 +63,9 @@ function submitApiKeyForm(event) {
 }
 
 function toggleApiKeyFormVisibility(show) {
+  document.getElementById("set-wallpaper-container").style.display = show
+    ? "none"
+    : "flex";
   document.getElementById("api-key-form-container").style.display = show
     ? "block"
     : "none";

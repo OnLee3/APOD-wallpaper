@@ -50,6 +50,13 @@ body:after {
   }
 }
 
+#set-wallpaper-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .star {
   background: white;
   position: absolute;
