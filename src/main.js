@@ -21,16 +21,45 @@ function createWindow() {
 
   // mainWindow.webContents.openDevTools();
   mainWindow.loadFile(path.join(__dirname, "index.html"));
+  mainWindow.on("closed", () => (mainWindow = null));
+}
 
-  mainWindow.on("closed", () => {
-    mainWindow = null;
-  });
+function getTimeUntilNextUpdate() {
+  const newYorkTimeZone = "America/New_York";
+  const now = new Date();
+  const newYorkNow = new Date(
+    now.toLocaleString("en-US", { timeZone: newYorkTimeZone })
+  );
+
+  const nextUpdate = new Date(newYorkNow);
+  nextUpdate.setHours(1, 0, 0);
+
+  if (newYorkNow.getHours() >= 1) {
+    nextUpdate.setDate(nextUpdate.getDate() + 1);
+  }
+
+  const timeDifference = nextUpdate - newYorkNow;
+  const hours = Math.floor(timeDifference / 1000 / 60 / 60);
+  const minutes = Math.floor((timeDifference / 1000 / 60) % 60);
+  const seconds = Math.floor((timeDifference / 1000) % 60);
+
+  return `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 }
 
 function createTrayIcon() {
   tray = new Tray(path.join(__dirname, "../public/donut_16x16.png"));
+  updateTrayIconContextMenu();
+  tray.setToolTip("APOD Wallpaper");
+}
 
+function updateTrayIconContextMenu() {
   const contextMenu = Menu.buildFromTemplate([
+    {
+      label: `Next Update: ${getTimeUntilNextUpdate()}`,
+      enabled: false,
+    },
     {
       label: "Show App",
       click: () => {
@@ -50,8 +79,8 @@ function createTrayIcon() {
     },
   ]);
 
-  tray.setToolTip("APOD Wallpaper");
   tray.setContextMenu(contextMenu);
+  setTimeout(updateTrayIconContextMenu, 1000);
 }
 
 function handleIpcEvents() {
@@ -63,7 +92,6 @@ function handleIpcEvents() {
 }
 
 function resetApiKey(event) {
-  console.log("Resetting API key...");
   const config = readConfig();
   config.apiKey = null;
   writeConfig(config);
@@ -71,7 +99,6 @@ function resetApiKey(event) {
 }
 
 function submitApiKey(event, apiKey) {
-  console.log("Received API key:", apiKey);
   const config = readConfig();
   config.apiKey = apiKey;
   writeConfig(config);
@@ -80,19 +107,15 @@ function submitApiKey(event, apiKey) {
 
 function getApiKey(event) {
   const config = readConfig();
-  const apiKey = config.apiKey;
-  event.sender.send("api-key", apiKey);
+  event.sender.send("api-key", config.apiKey);
 }
 
 function setWallpaper(event, apiKey) {
-  console.log("Setting APOD wallpaper...");
   event.sender.send("set-wallpaper", apiKey);
 }
 
 async function downloadAndSetWallpaperHandler(event, { hdurl, url }) {
-  console.log("Downloading and setting wallpaper...");
   await downloadAndSetWallpaper({ hdurl, url });
-  console.log("Done.");
   event.sender.send("download-and-set-wallpaper-finished");
 }
 
@@ -100,7 +123,6 @@ function scheduleWallpaperUpdate() {
   cron.schedule(
     "1 0 * * *",
     async () => {
-      console.log("Checking for new APOD image...");
       const config = readConfig();
       const apiKey = config.apiKey;
 
@@ -109,8 +131,7 @@ function scheduleWallpaperUpdate() {
         return;
       }
 
-      const { ipcRenderer } = require("electron");
-      ipcRenderer.send("get-api-key");
+      getApiKey();
     },
     {
       scheduled: true,
