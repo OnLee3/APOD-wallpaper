@@ -84,6 +84,48 @@ ipcRenderer.on("submit-api-key", (event, apiKey) => {
   }
 });
 
+function createStars(numStars) {
+  const starsContainer = document.createElement("div");
+  starsContainer.className = "stars-container";
+
+  for (let i = 0; i < numStars; i++) {
+    const star = document.createElement("div");
+    const randomValue = Math.random();
+    let starType;
+
+    if (randomValue < 0.48) {
+      starType = 0;
+    } else if (randomValue < 0.96) {
+      starType = 1;
+    } else {
+      starType = 2;
+    }
+
+    switch (starType) {
+      case 0:
+        star.className = "star";
+        break;
+      case 1:
+        star.className = "star-back";
+        break;
+      case 2:
+        star.className = "supernova";
+        break;
+    }
+
+    star.style.top = `${Math.random() * 100}vh`;
+    star.style.left = `${Math.random() * 100}vw`;
+    const animationDuration = 50 + Math.random() * (starType === 1 ? 50 : 100);
+    star.style.animationDuration = `${animationDuration}s`;
+    star.style.animationDelay = `${-Math.random() * animationDuration}s`;
+    starsContainer.appendChild(star);
+  }
+
+  document.body.appendChild(starsContainer);
+}
+
+createStars(100);
+
 document
   .getElementById("set-wallpaper")
   .addEventListener("click", handleSetWallpaperClick);
