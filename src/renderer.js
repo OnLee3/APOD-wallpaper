@@ -25,6 +25,8 @@ async function fetchApodImageData(apiKey) {
 }
 
 function handleApodImageError(error) {
+  const loadingSpinner = document.getElementById("loading-spinner");
+  loadingSpinner.style.display = "none";
   if (error.code === "ERR_BAD_REQUEST") {
     showErrorMessage(
       "Invalid API key. Please check your API key and try again."
@@ -67,17 +69,17 @@ function toggleApiKeyFormVisibility(show) {
 }
 
 function showSuccessIcon() {
-  const successIcon = document.getElementById("success-icon");
+  const successMessage = document.getElementById("success-message");
   const errorMessage = document.getElementById("error-message");
-  successIcon.style.display = "block";
+  successMessage.style.display = "block";
   errorMessage.style.display = "none";
 }
 
 function showErrorMessage(errorText) {
-  const successIcon = document.getElementById("success-icon");
+  const successMessage = document.getElementById("success-message");
   const errorMessage = document.getElementById("error-message");
   const errorTextElement = document.getElementById("error-text");
-  successIcon.style.display = "none";
+  successMessage.style.display = "none";
   errorMessage.style.display = "block";
   errorTextElement.innerText = errorText;
 }
