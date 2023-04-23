@@ -4,42 +4,39 @@ This is a Node.js script that sets your desktop wallpaper to the Astronomy Pictu
 
 ## Prerequisites
 
--   [Node.js](https://nodejs.org/en/download/) installed on your system.
--   A NASA API key. You can get one from [https://api.nasa.gov/](https://api.nasa.gov/).
+- [Node.js](https://nodejs.org/en/download/) installed on your system.
+- A NASA API key. You can get one from [https://api.nasa.gov/](https://api.nasa.gov/).
 
 ## Installation
 
 1.  Clone the repository:
-    
+
     ```
     git clone https://github.com/OnLee3/APOD-wallpaper.git
     ```
-    
+
 2.  Change to the `APOD-wallpaper` directory:
-    
+
     ```
     cd APOD-wallpaper
     ```
-    
+
 3.  Install the required dependencies:
-    
+
     ```
     npm install
     ```
-    
 
 ## Usage
 
 1.  Run the script:
-    
+
     ```
-    node index.js
+    npm start
     ```
-    
+
 2.  If it's your first time running the script, it will prompt you to enter your NASA API key. Enter the key, and it will be saved to a `.env` file for future use.
-    
 3.  The script will fetch the APOD image and set it as your desktop wallpaper. It will also schedule a task to update the wallpaper daily at 12:00 PM.
-    
 
 ## Troubleshooting
 
