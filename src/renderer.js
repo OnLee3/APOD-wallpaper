@@ -3,7 +3,7 @@ const axios = require("axios");
 
 const APOD_API_URL = "https://api.nasa.gov/planetary/apod";
 
-async function fetchApodImage(apiKey) {
+async function fetchApodImageData(apiKey) {
   try {
     const response = await axios.get(APOD_API_URL, {
       params: {
@@ -20,11 +20,11 @@ async function fetchApodImage(apiKey) {
 
     return { hdurl, url };
   } catch (error) {
-    handleError(error);
+    handleApodImageError(error);
   }
 }
 
-function handleError(error) {
+function handleApodImageError(error) {
   if (error.code === "ERR_BAD_REQUEST") {
     console.error("Invalid API key. Please check your API key and try again.");
     ipcRenderer.send("reset-api-key");
@@ -33,18 +33,19 @@ function handleError(error) {
   }
 }
 
-function handleSetWallpaperClick() {
+function requestApiKey() {
   ipcRenderer.send("get-api-key");
 }
 
-function setWallpaper() {
+function displayWallpaperLoading() {
+  const loadingSpinner = document.getElementById("loading-spinner");
+  loadingSpinner.style.display = "flex";
   ipcRenderer.once("download-and-set-wallpaper-finished", () => {
-    const loadingSpinner = document.getElementById("loading-spinner");
     loadingSpinner.style.display = "none";
   });
 }
 
-function handleApiKeyFormSubmit(event) {
+function submitApiKeyForm(event) {
   event.preventDefault();
   const apiKey = document.getElementById("api-key-input").value.trim();
   if (apiKey.length === 0) {
@@ -56,15 +57,70 @@ function handleApiKeyFormSubmit(event) {
   }
 }
 
-function showApiKeyForm(show) {
+function toggleApiKeyFormVisibility(show) {
   document.getElementById("api-key-form-container").style.display = show
     ? "block"
     : "none";
 }
 
+function createStarsBackground(numStars) {
+  const starsContainer = document.createElement("div");
+  starsContainer.className = "stars-container";
+
+  for (let i = 0; i < numStars; i++) {
+    const star = createStarElement();
+    starsContainer.appendChild(star);
+  }
+
+  document.body.appendChild(starsContainer);
+}
+
+function createStarElement() {
+  const star = document.createElement("div");
+  const randomValue = Math.random();
+  let starType;
+
+  if (randomValue < 0.48) {
+    starType = 0;
+  } else if (randomValue < 0.96) {
+    starType = 1;
+  } else {
+    starType = 2;
+  }
+
+  star.className = getStarClassName(starType);
+  star.style.top = `${Math.random() * 100}vh`;
+  star.style.left = `${Math.random() * 100}vw`;
+  const animationDuration = 50 + Math.random() * (starType === 1 ? 50 : 100);
+  star.style.animationDuration = `${animationDuration}s`;
+  star.style.animationDelay = `${-Math.random() * animationDuration}s`;
+
+  return star;
+}
+
+function getStarClassName(starType) {
+  switch (starType) {
+    case 0:
+      return "star";
+    case 1:
+      return "star-back";
+    case 2:
+      return "supernova";
+  }
+}
+
+createStarsBackground(100);
+
+document
+  .getElementById("set-wallpaper")
+  .addEventListener("click", requestApiKey);
+document
+  .getElementById("api-key-form")
+  .addEventListener("submit", submitApiKeyForm);
+
 ipcRenderer.on("set-wallpaper", async (event, apiKey) => {
   console.log("Setting APOD wallpaper...");
-  const { hdurl, url } = await fetchApodImage(apiKey);
+  const { hdurl, url } = await fetchApodImageData(apiKey);
 
   if (hdurl || url) {
     ipcRenderer.send("download-and-set-wallpaper", { hdurl, url });
@@ -75,70 +131,19 @@ ipcRenderer.on("api-key", (event, apiKey) => {
   if (apiKey) {
     console.log("API key found:", apiKey);
     ipcRenderer.send("set-wallpaper", apiKey);
-    const loadingSpinner = document.getElementById("loading-spinner");
-    loadingSpinner.style.display = "flex";
-    setWallpaper();
-    showApiKeyForm(false);
+    displayWallpaperLoading();
+    toggleApiKeyFormVisibility(false);
   } else {
     console.log("API key not found");
-    showApiKeyForm(true);
+    toggleApiKeyFormVisibility(true);
   }
 });
 
 ipcRenderer.on("submit-api-key", (event, apiKey) => {
   console.log("Received API key:", apiKey);
   if (apiKey) {
-    showApiKeyForm(false);
+    toggleApiKeyFormVisibility(false);
   } else {
-    showApiKeyForm(true);
+    toggleApiKeyFormVisibility(true);
   }
 });
-
-function createStars(numStars) {
-  const starsContainer = document.createElement("div");
-  starsContainer.className = "stars-container";
-
-  for (let i = 0; i < numStars; i++) {
-    const star = document.createElement("div");
-    const randomValue = Math.random();
-    let starType;
-
-    if (randomValue < 0.48) {
-      starType = 0;
-    } else if (randomValue < 0.96) {
-      starType = 1;
-    } else {
-      starType = 2;
-    }
-
-    switch (starType) {
-      case 0:
-        star.className = "star";
-        break;
-      case 1:
-        star.className = "star-back";
-        break;
-      case 2:
-        star.className = "supernova";
-        break;
-    }
-
-    star.style.top = `${Math.random() * 100}vh`;
-    star.style.left = `${Math.random() * 100}vw`;
-    const animationDuration = 50 + Math.random() * (starType === 1 ? 50 : 100);
-    star.style.animationDuration = `${animationDuration}s`;
-    star.style.animationDelay = `${-Math.random() * animationDuration}s`;
-    starsContainer.appendChild(star);
-  }
-
-  document.body.appendChild(starsContainer);
-}
-
-createStars(100);
-
-document
-  .getElementById("set-wallpaper")
-  .addEventListener("click", handleSetWallpaperClick);
-document
-  .getElementById("api-key-form")
-  .addEventListener("submit", handleApiKeyFormSubmit);
