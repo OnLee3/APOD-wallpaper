@@ -1,10 +1,13 @@
 # APOD Wallpaper
 
+![스크린샷 2023-04-23 오후 9 14 54 2](https://user-images.githubusercontent.com/83897458/233839439-5ee9e7d8-3bd1-4ea1-84a1-bf50c2294cec.jpeg)
+
 This is a Node.js script that sets your desktop wallpaper to the Astronomy Picture of the Day (APOD) from NASA. The script fetches the APOD image daily at 12:00 PM and sets it as your desktop wallpaper.
 
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/en/download/) installed on your system.
+
 - A NASA API key. You can get one from [https://api.nasa.gov/](https://api.nasa.gov/).
 
 ## Installation
