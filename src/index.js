@@ -2,14 +2,7 @@ const axios = require("axios");
 const fs = require("fs");
 const { app } = require("electron");
 const path = require("path");
-
-let getWallpaper, setWallpaper;
-
-(async () => {
-  const wallpaperModule = await import("wallpaper");
-  getWallpaper = wallpaperModule.getWallpaper;
-  setWallpaper = wallpaperModule.setWallpaper;
-})();
+const wallpaper = require("wallpaper");
 
 async function downloadImage(imageUrl) {
   const response = await axios({
@@ -34,15 +27,17 @@ function saveImageToDisk(imageStream) {
 async function downloadAndSetWallpaper({ hdurl, url }) {
   try {
     let imageStream = await downloadImage(hdurl).catch(async () => {
-      console.error("Error downloading hdurl wallpaper, trying url.");
+      // log.error("Error downloading hdurl wallpaper, trying url.");
       return await downloadImage(url);
     });
+    // log.info(imageStream);
 
     await saveImageToDisk(imageStream);
-    await setWallpaper(path.join(app.getPath("userData"), "wallpaper.jpg"));
-    console.log("Wallpaper set successfully");
+    await wallpaper.set(path.join(app.getPath("userData"), "wallpaper.jpg"));
+    // log.info(path.join(app.getPath("userData"), "wallpaper.jpg"));
+    // log.info("Wallpaper set successfully");
   } catch (error) {
-    console.error("Error downloading and setting wallpaper:", error);
+    // log.error("Error downloading and setting wallpaper:", error);
   }
 }
 
